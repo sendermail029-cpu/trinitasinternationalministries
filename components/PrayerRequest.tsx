@@ -96,7 +96,7 @@ export default function Gallery() {
                 alt={image.title}
                 width={600}
                 height={800}
-                className="w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                className="h-[440px] w-full bg-slate-100 object-contain transition-transform duration-700 sm:h-auto sm:object-cover sm:group-hover:scale-110"
               />
 
               <div className="absolute inset-0 bg-navy/60 opacity-0 group-hover:opacity-100 transition flex flex-col justify-end p-6">
