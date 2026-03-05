@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --gold: #D4AF37;
+  --navy: #0B1C2D;
+  --white: #ffffff;
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: var(--font-poppins), sans-serif;
+  background: var(--white);
+  color: var(--navy);
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-playfair), serif;
+}
+
+.section-shell {
+  @apply mx-auto w-full max-w-7xl px-6 md:px-10;
+}
