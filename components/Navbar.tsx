@@ -80,9 +80,9 @@ export default function Navbar() {
           scrolled ? "bg-navy/95 shadow-premium backdrop-blur-md" : "bg-transparent"
         }`}
       >
-        <nav className="section-shell flex h-24 items-center justify-between">
-          <a href="#home" className="flex items-center gap-3">
-            <span className="relative inline-flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-transparent shadow-[0_6px_16px_rgba(0,0,0,0.4)]">
+        <nav className="section-shell flex h-20 items-center justify-between md:h-24">
+          <a href="#home" className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
+            <span className="relative inline-flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-black/30 p-1 shadow-[0_6px_16px_rgba(0,0,0,0.4)] sm:h-14 sm:w-14 md:h-16 md:w-16">
               <Image
                 src="/log.gif"
                 alt="Trinitas Ministries Logo"
@@ -90,21 +90,29 @@ export default function Navbar() {
                 priority
                 sizes="64px"
                 quality={100}
-                className="rounded-full object-cover object-center scale-95"
+                unoptimized
+                className="rounded-full object-contain object-center"
               />
             </span>
-            <span className="leading-none text-white">
-              <span className="block font-serif text-3xl font-medium tracking-[0.08em] text-[#e9edf5]">TRINITAS</span>
-              <span className="mt-1 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.28em] text-gold">
-                <span className="h-px w-8 bg-gold/80" />
-                <span>International Ministries</span>
-                <span className="h-px w-8 bg-gold/80" />
+            <span className="min-w-0 leading-none text-white">
+              <span className="block font-serif text-2xl font-medium tracking-[0.06em] text-[#e9edf5] sm:text-[2rem] sm:tracking-[0.08em]">TRINITAS</span>
+              <span className="mt-1 block text-[8px] font-semibold uppercase tracking-[0.2em] text-gold sm:text-[10px] sm:tracking-[0.28em]">
+                <span className="block leading-[1.05] sm:hidden">
+                  International
+                  <br />
+                  Ministries
+                </span>
+                <span className="hidden items-center gap-2 sm:flex">
+                  <span className="h-px w-8 bg-gold/80" />
+                  <span>International Ministries</span>
+                  <span className="h-px w-8 bg-gold/80" />
+                </span>
               </span>
             </span>
           </a>
 
           <button
-            className="inline-flex items-center justify-center rounded-md border border-gold/60 px-3 py-2 text-xs font-semibold text-gold md:hidden"
+            className="ml-2 inline-flex shrink-0 items-center justify-center rounded-md border border-gold/60 px-3 py-2 text-xs font-semibold text-gold md:hidden"
             onClick={() => setOpen((prev) => !prev)}
             aria-label="Toggle menu"
           >
