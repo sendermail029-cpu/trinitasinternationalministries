@@ -20,6 +20,11 @@ export const metadata: Metadata = {
   title: "Trinitas Ministries | International Christian Ministry",
   description:
     "Trinitas Ministries is an international Christian ministry dedicated to evangelism, charity, village outreach, spiritual guidance, and helping children.",
+  icons: {
+    icon: "/trr.ico",
+    shortcut: "/trr.ico",
+    apple: "/trr.ico"
+  },
   keywords: [
     "Trinitas Ministries",
     "Christian Ministry",
