@@ -84,7 +84,7 @@ export default function Navbar() {
           <a href="#home" className="flex min-w-0 flex-1 items-center gap-2.5 sm:gap-3">
             <span className="relative inline-flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-black/30 shadow-[0_6px_16px_rgba(0,0,0,0.4)] sm:h-14 sm:w-14 md:h-16 md:w-16">
               <Image
-                src="/log.gif"
+                src="/logo2.gif"
                 alt="Trinitas Ministries Logo"
                 fill
                 priority

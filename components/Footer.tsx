@@ -21,7 +21,7 @@ export default function Footer() {
               <div className="flex items-center gap-3 sm:gap-4">
                 <span className="relative inline-flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-black/30 shadow-[0_6px_16px_rgba(0,0,0,0.4)]">
                   <Image
-                    src="/log.gif"
+                    src="/logo2.gif"
                     alt="Trinitas Ministries Logo"
                     fill
                     priority
