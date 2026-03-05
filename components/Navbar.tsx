@@ -62,7 +62,7 @@ export default function Navbar() {
       {splashTarget && (
         <div className="fixed inset-0 z-[120] overflow-hidden bg-navy">
           <Image
-            src="/logoo.gif"
+            src="/log.gif"
             alt="Loading transition"
             fill
             priority
