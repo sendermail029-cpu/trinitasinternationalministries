@@ -9,17 +9,17 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-[#050B15] text-white pt-20 pb-10">
-      <div className="max-w-7xl mx-auto px-6 lg:px-20">
+    <footer className="overflow-x-clip bg-[#050B15] pt-20 pb-10 text-white">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-20">
 
         {/* MAIN CONTENT AREA */}
         <div className="flex flex-col md:flex-row justify-between items-start gap-12 mb-20">
 
           {/* Left: Brand & Statement */}
-          <div className="flex flex-col space-y-6 max-w-sm">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 backdrop-blur-sm">
-              <div className="flex items-center gap-4">
-                <span className="relative inline-flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-black/30 p-1 shadow-[0_6px_16px_rgba(0,0,0,0.4)]">
+          <div className="flex max-w-sm flex-col space-y-6">
+            <div className="max-w-full overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-4 backdrop-blur-sm">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <span className="relative inline-flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-black/30 shadow-[0_6px_16px_rgba(0,0,0,0.4)]">
                   <Image
                     src="/log.gif"
                     alt="Trinitas Ministries Logo"
@@ -28,20 +28,20 @@ export default function Footer() {
                     sizes="64px"
                     quality={100}
                     unoptimized
-                    className="rounded-full object-contain object-center"
+                    className="rounded-full object-cover object-center scale-110"
                   />
                 </span>
-                <span className="leading-none text-white">
-                  <span className="block font-serif text-3xl font-medium tracking-[0.08em] text-[#e9edf5]">TRINITAS</span>
-                  <span className="mt-1 flex items-center gap-2 text-[8px] font-semibold uppercase tracking-[0.28em] text-gold">
-                    <span className="h-px w-8 bg-gold/80" />
-                    <span>International Ministries</span>
-                    <span className="h-px w-8 bg-gold/80" />
+                <span className="min-w-0 leading-none text-white">
+                  <span className="block font-serif text-[2rem] font-medium tracking-[0.06em] text-[#e9edf5] sm:text-3xl sm:tracking-[0.08em]">TRINITAS</span>
+                  <span className="mt-1 flex items-center gap-2 text-[8px] font-semibold uppercase tracking-[0.12em] text-gold sm:tracking-[0.2em]">
+                    <span className="hidden h-px w-8 shrink-0 bg-gold/80 sm:block" />
+                    <span className="truncate sm:whitespace-nowrap">International Ministries</span>
+                    <span className="hidden h-px w-8 shrink-0 bg-gold/80 sm:block" />
                   </span>
                 </span>
               </div>
             </div>
-            <p className="text-[11px] text-white/50 uppercase tracking-widest leading-relaxed">
+            <p className="break-words text-[10px] leading-relaxed uppercase tracking-[0.14em] text-white/50 sm:text-[11px] sm:tracking-widest">
               Trinitas Charitable Trust is dedicated to ministerial excellence and community growth.
             </p>
           </div>
@@ -49,7 +49,7 @@ export default function Footer() {
           {/* Center: Navigation */}
           <nav className="flex flex-col space-y-4">
             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20">Navigation</span>
-            <div className="grid grid-cols-2 gap-x-12 gap-y-3">
+            <div className="grid grid-cols-2 gap-x-8 gap-y-3 sm:gap-x-12">
               {["Home", "About", "Live", "Donations", "Contact"].map((link) => (
                 <a
                   key={link}
@@ -87,7 +87,7 @@ export default function Footer() {
         {/* BOTTOM UTILITY BAR */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-8 pt-10 border-t border-white/5">
           {/* Copyright */}
-          <div className="text-[9px] font-bold text-white/20 uppercase tracking-[0.3em]">
+          <div className="break-words text-center text-[9px] font-bold uppercase tracking-[0.08em] text-white/20 md:text-left md:tracking-[0.3em]">
             � 2026 Trinitas International Ministries | All Rights Reserved
           </div>
 
