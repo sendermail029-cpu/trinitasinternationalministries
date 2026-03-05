@@ -19,7 +19,7 @@ export default function Footer() {
           <div className="flex flex-col space-y-6 max-w-sm">
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 backdrop-blur-sm">
               <div className="flex items-center gap-4">
-                <span className="relative inline-flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-transparent shadow-[0_6px_16px_rgba(0,0,0,0.4)]">
+                <span className="relative inline-flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-black/30 p-1 shadow-[0_6px_16px_rgba(0,0,0,0.4)]">
                   <Image
                     src="/log.gif"
                     alt="Trinitas Ministries Logo"
@@ -27,7 +27,8 @@ export default function Footer() {
                     priority
                     sizes="64px"
                     quality={100}
-                    className="rounded-full object-cover object-center"
+                    unoptimized
+                    className="rounded-full object-contain object-center"
                   />
                 </span>
                 <span className="leading-none text-white">
