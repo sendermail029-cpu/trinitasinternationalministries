@@ -12,6 +12,7 @@ export default function AdminPage() {
   const [customLiveUrl, setCustomLiveUrl] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [warning, setWarning] = useState("");
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadedPath, setUploadedPath] = useState("");
@@ -64,6 +65,7 @@ export default function AdminPage() {
     setLoading(true);
     setError("");
     setSuccess("");
+    setWarning("");
 
     try {
       const response = await fetch("/api/admin/login", {
@@ -95,6 +97,7 @@ export default function AdminPage() {
     setLoading(true);
     setError("");
     setSuccess("");
+    setWarning("");
 
     try {
       const response = await fetch("/api/admin/update-live", {
@@ -108,13 +111,16 @@ export default function AdminPage() {
           customLiveUrl
         })
       });
-      const data = (await response.json()) as { success?: boolean; error?: string };
+      const data = (await response.json()) as { success?: boolean; error?: string; persistent?: boolean };
 
       if (!response.ok || !data.success) {
         throw new Error(data.error || "Failed to save settings.");
       }
 
       setSuccess("Settings saved successfully.");
+      if (data.persistent === false) {
+        setWarning("Saved on this server instance only. Add KV or YOUTUBE_CUSTOM_LIVE_URL in deployment for a reliable live site.");
+      }
     } catch (err) {
       const message = err instanceof Error ? err.message : "Failed to save settings.";
       setError(message);
@@ -286,6 +292,7 @@ export default function AdminPage() {
         ) : null}
 
         {error ? <p className="mt-4 text-sm text-red-300">{error}</p> : null}
+        {warning ? <p className="mt-4 text-sm text-amber-200">{warning}</p> : null}
         {success ? <p className="mt-4 text-sm text-gold">{success}</p> : null}
       </div>
     </main>

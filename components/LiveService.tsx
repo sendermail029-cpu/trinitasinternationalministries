@@ -8,6 +8,20 @@ type LiveState = {
   embedUrl: string | null;
 };
 
+function buildPlayerUrl(embedUrl: string): string {
+  try {
+    const url = new URL(embedUrl);
+    url.searchParams.set("autoplay", "1");
+    url.searchParams.set("rel", "0");
+    url.searchParams.set("modestbranding", "1");
+    url.searchParams.set("showinfo", "0");
+    return url.toString();
+  } catch {
+    const separator = embedUrl.includes("?") ? "&" : "?";
+    return `${embedUrl}${separator}autoplay=1&rel=0&modestbranding=1&showinfo=0`;
+  }
+}
+
 export default function LiveService() {
   const whatsappNumber = "919848772472";
   const [loading, setLoading] = useState(true);
@@ -129,7 +143,7 @@ export default function LiveService() {
         <div className="relative flex-1 h-full bg-black">
           {!loading && liveState.status === "live" && (
             <iframe
-              src={`${liveState.embedUrl}?autoplay=1&rel=0&modestbranding=1&showinfo=0`}
+              src={buildPlayerUrl(liveState.embedUrl!)}
               className="absolute inset-0 h-full w-full object-cover"
               allowFullScreen
             />

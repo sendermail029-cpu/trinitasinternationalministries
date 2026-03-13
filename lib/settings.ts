@@ -11,6 +11,10 @@ const SETTINGS_PATH = path.join(SETTINGS_DIR, "settings.json");
 const KV_URL = process.env.KV_REST_API_URL;
 const KV_TOKEN = process.env.KV_REST_API_TOKEN;
 const KV_SETTINGS_KEY = process.env.KV_SETTINGS_KEY || "trinitas:settings";
+const ENV_CUSTOM_LIVE_URL =
+  process.env.YOUTUBE_CUSTOM_LIVE_URL ||
+  process.env.CUSTOM_LIVE_URL ||
+  "";
 
 const DEFAULT_SETTINGS: AppSettings = {
   channelId: "",
@@ -32,6 +36,10 @@ function normalizeSettings(input: unknown): AppSettings {
 
 function shouldUseKv(): boolean {
   return Boolean(KV_URL && KV_TOKEN);
+}
+
+export function hasPersistentSettingsStore(): boolean {
+  return shouldUseKv();
 }
 
 async function readSettingsFromKv(): Promise<AppSettings | null> {
@@ -79,16 +87,30 @@ async function writeSettingsToKv(next: AppSettings): Promise<boolean> {
 }
 
 export async function readSettings(): Promise<AppSettings> {
+  const envCustomLiveUrl = normalizeYoutubeEmbedUrl(ENV_CUSTOM_LIVE_URL);
+
   if (shouldUseKv()) {
     const fromKv = await readSettingsFromKv();
-    if (fromKv) return fromKv;
+    if (fromKv) {
+      return {
+        channelId: fromKv.channelId || process.env.YOUTUBE_CHANNEL_ID || "",
+        customLiveUrl: fromKv.customLiveUrl || envCustomLiveUrl
+      };
+    }
   }
 
   try {
     const raw = await fs.readFile(SETTINGS_PATH, "utf8");
-    return normalizeSettings(JSON.parse(raw));
+    const normalized = normalizeSettings(JSON.parse(raw));
+    return {
+      channelId: normalized.channelId || process.env.YOUTUBE_CHANNEL_ID || "",
+      customLiveUrl: normalized.customLiveUrl || envCustomLiveUrl
+    };
   } catch {
-    return DEFAULT_SETTINGS;
+    return {
+      channelId: process.env.YOUTUBE_CHANNEL_ID || "",
+      customLiveUrl: envCustomLiveUrl
+    };
   }
 }
 
@@ -116,7 +138,7 @@ export function isLikelyYoutubeEmbed(url: string): boolean {
   }
 }
 
-export function normalizeYoutubeEmbedUrl(url: string): string {
+export function normalizeYoutubeEmbedUrl(url: string, fallbackChannelId = ""): string {
   const input = url.trim();
   if (!input) return "";
 
@@ -151,6 +173,17 @@ export function normalizeYoutubeEmbedUrl(url: string): string {
     if (parsed.pathname.startsWith("/live/")) {
       const id = parsed.pathname.split("/")[2];
       return id ? `https://www.youtube.com/embed/${id}` : "";
+    }
+
+    if (parsed.pathname.startsWith("/channel/")) {
+      const [, , channelId, maybeLive] = parsed.pathname.split("/");
+      if (maybeLive === "live" && channelId) {
+        return `https://www.youtube.com/embed/live_stream?channel=${encodeURIComponent(channelId)}`;
+      }
+    }
+
+    if (parsed.pathname.endsWith("/live") && fallbackChannelId) {
+      return `https://www.youtube.com/embed/live_stream?channel=${encodeURIComponent(fallbackChannelId)}`;
     }
 
     if (parsed.pathname.startsWith("/live_stream")) {

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isValidAdminToken } from "@/lib/adminAuth";
-import { normalizeYoutubeEmbedUrl, writeSettings } from "@/lib/settings";
+import { hasPersistentSettingsStore, normalizeYoutubeEmbedUrl, writeSettings } from "@/lib/settings";
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,18 +18,21 @@ export async function POST(request: NextRequest) {
 
     const channelId = (body.channelId ?? "").trim();
     const rawCustomLiveUrl = (body.customLiveUrl ?? "").trim();
-    const customLiveUrl = rawCustomLiveUrl ? normalizeYoutubeEmbedUrl(rawCustomLiveUrl) : "";
+    const customLiveUrl = rawCustomLiveUrl ? normalizeYoutubeEmbedUrl(rawCustomLiveUrl, channelId) : "";
 
     if (rawCustomLiveUrl && !customLiveUrl) {
       return NextResponse.json(
-        { error: "Please enter a valid YouTube URL (watch/share/live/embed)." },
+        { error: "Please enter a valid YouTube URL (watch/share/live/embed), or add the channel ID for channel live links." },
         { status: 400 }
       );
     }
 
     await writeSettings({ channelId, customLiveUrl });
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({
+      success: true,
+      persistent: hasPersistentSettingsStore() || process.env.NODE_ENV !== "production"
+    });
   } catch {
     return NextResponse.json({ error: "Failed to update settings." }, { status: 500 });
   }
