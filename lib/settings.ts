@@ -52,17 +52,21 @@ export function hasPersistentSettingsStore(): boolean {
 function mergeSettings(
   stored: AppSettings,
   options?: {
+    hasStoredRecord?: boolean;
     preferEnvCustomLiveUrl?: boolean;
   }
 ): AppSettings {
   const envCustomLiveUrl = normalizeYoutubeEmbedUrl(ENV_CUSTOM_LIVE_URL);
+  const hasStoredRecord = options?.hasStoredRecord ?? true;
   const preferEnvCustomLiveUrl = options?.preferEnvCustomLiveUrl ?? false;
 
   return {
     channelId: stored.channelId || process.env.YOUTUBE_CHANNEL_ID || "",
-    customLiveUrl: preferEnvCustomLiveUrl
-      ? envCustomLiveUrl || stored.customLiveUrl
-      : stored.customLiveUrl || envCustomLiveUrl
+    customLiveUrl: hasStoredRecord
+      ? stored.customLiveUrl
+      : preferEnvCustomLiveUrl
+        ? envCustomLiveUrl || stored.customLiveUrl
+        : stored.customLiveUrl || envCustomLiveUrl
   };
 }
 
@@ -81,7 +85,7 @@ async function readSettingsFromKv(): Promise<AppSettings | null> {
     if (!response.ok) return null;
 
     const data = (await response.json()) as { result?: string | null };
-    if (!data.result) return DEFAULT_SETTINGS;
+    if (!data.result) return null;
     return normalizeSettings(JSON.parse(data.result));
   } catch {
     return null;
@@ -162,10 +166,13 @@ export async function readSettings(): Promise<AppSettings> {
     const raw = await fs.readFile(SETTINGS_PATH, "utf8");
     const normalized = normalizeSettings(JSON.parse(raw));
     return mergeSettings(normalized, {
+      hasStoredRecord: Boolean(normalized.channelId || normalized.customLiveUrl),
       preferEnvCustomLiveUrl: process.env.NODE_ENV === "production"
     });
   } catch {
-    return mergeSettings(DEFAULT_SETTINGS);
+    return mergeSettings(DEFAULT_SETTINGS, {
+      hasStoredRecord: false
+    });
   }
 }
 
