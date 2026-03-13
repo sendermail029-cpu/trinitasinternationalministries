@@ -1,5 +1,6 @@
 import { promises as fs } from "fs";
 import path from "path";
+import { get as getBlob, put as putBlob } from "@vercel/blob";
 
 export type AppSettings = {
   channelId: string;
@@ -11,6 +12,8 @@ const SETTINGS_PATH = path.join(SETTINGS_DIR, "settings.json");
 const KV_URL = process.env.KV_REST_API_URL;
 const KV_TOKEN = process.env.KV_REST_API_TOKEN;
 const KV_SETTINGS_KEY = process.env.KV_SETTINGS_KEY || "trinitas:settings";
+const BLOB_RW_TOKEN = process.env.BLOB_READ_WRITE_TOKEN;
+const BLOB_SETTINGS_PATH = "settings/app-settings.json";
 const ENV_CUSTOM_LIVE_URL =
   process.env.YOUTUBE_CUSTOM_LIVE_URL ||
   process.env.CUSTOM_LIVE_URL ||
@@ -38,8 +41,29 @@ function shouldUseKv(): boolean {
   return Boolean(KV_URL && KV_TOKEN);
 }
 
+function shouldUseBlob(): boolean {
+  return Boolean(BLOB_RW_TOKEN);
+}
+
 export function hasPersistentSettingsStore(): boolean {
-  return shouldUseKv();
+  return shouldUseKv() || shouldUseBlob();
+}
+
+function mergeSettings(
+  stored: AppSettings,
+  options?: {
+    preferEnvCustomLiveUrl?: boolean;
+  }
+): AppSettings {
+  const envCustomLiveUrl = normalizeYoutubeEmbedUrl(ENV_CUSTOM_LIVE_URL);
+  const preferEnvCustomLiveUrl = options?.preferEnvCustomLiveUrl ?? false;
+
+  return {
+    channelId: stored.channelId || process.env.YOUTUBE_CHANNEL_ID || "",
+    customLiveUrl: preferEnvCustomLiveUrl
+      ? envCustomLiveUrl || stored.customLiveUrl
+      : stored.customLiveUrl || envCustomLiveUrl
+  };
 }
 
 async function readSettingsFromKv(): Promise<AppSettings | null> {
@@ -86,35 +110,71 @@ async function writeSettingsToKv(next: AppSettings): Promise<boolean> {
   }
 }
 
+async function readSettingsFromBlob(): Promise<AppSettings | null> {
+  if (!BLOB_RW_TOKEN) return null;
+
+  try {
+    const blob = await getBlob(BLOB_SETTINGS_PATH, {
+      access: "private",
+      token: BLOB_RW_TOKEN
+    });
+    if (!blob || !("stream" in blob)) return DEFAULT_SETTINGS;
+    const body = await new Response(blob.stream).text();
+    return normalizeSettings(JSON.parse(body));
+  } catch {
+    return null;
+  }
+}
+
+async function writeSettingsToBlob(next: AppSettings): Promise<boolean> {
+  if (!BLOB_RW_TOKEN) return false;
+
+  try {
+    await putBlob(BLOB_SETTINGS_PATH, JSON.stringify(next, null, 2), {
+      access: "private",
+      addRandomSuffix: false,
+      allowOverwrite: true,
+      contentType: "application/json",
+      token: BLOB_RW_TOKEN
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function readSettings(): Promise<AppSettings> {
-  const envCustomLiveUrl = normalizeYoutubeEmbedUrl(ENV_CUSTOM_LIVE_URL);
+  if (shouldUseBlob()) {
+    const fromBlob = await readSettingsFromBlob();
+    if (fromBlob) {
+      return mergeSettings(fromBlob);
+    }
+  }
 
   if (shouldUseKv()) {
     const fromKv = await readSettingsFromKv();
     if (fromKv) {
-      return {
-        channelId: fromKv.channelId || process.env.YOUTUBE_CHANNEL_ID || "",
-        customLiveUrl: envCustomLiveUrl || fromKv.customLiveUrl
-      };
+      return mergeSettings(fromKv);
     }
   }
 
   try {
     const raw = await fs.readFile(SETTINGS_PATH, "utf8");
     const normalized = normalizeSettings(JSON.parse(raw));
-    return {
-      channelId: normalized.channelId || process.env.YOUTUBE_CHANNEL_ID || "",
-      customLiveUrl: envCustomLiveUrl || normalized.customLiveUrl
-    };
+    return mergeSettings(normalized, {
+      preferEnvCustomLiveUrl: process.env.NODE_ENV === "production"
+    });
   } catch {
-    return {
-      channelId: process.env.YOUTUBE_CHANNEL_ID || "",
-      customLiveUrl: envCustomLiveUrl
-    };
+    return mergeSettings(DEFAULT_SETTINGS);
   }
 }
 
 export async function writeSettings(next: AppSettings): Promise<void> {
+  if (shouldUseBlob()) {
+    const written = await writeSettingsToBlob(next);
+    if (written) return;
+  }
+
   if (shouldUseKv()) {
     const written = await writeSettingsToKv(next);
     if (written) return;
