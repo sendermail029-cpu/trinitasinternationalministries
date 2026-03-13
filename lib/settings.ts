@@ -14,6 +14,7 @@ const KV_TOKEN = process.env.KV_REST_API_TOKEN;
 const KV_SETTINGS_KEY = process.env.KV_SETTINGS_KEY || "trinitas:settings";
 const BLOB_RW_TOKEN = process.env.BLOB_READ_WRITE_TOKEN;
 const BLOB_SETTINGS_PATH = "settings/app-settings.json";
+const BLOB_ACCESS = "public" as const;
 const ENV_CUSTOM_LIVE_URL =
   process.env.YOUTUBE_CUSTOM_LIVE_URL ||
   process.env.CUSTOM_LIVE_URL ||
@@ -119,7 +120,7 @@ async function readSettingsFromBlob(): Promise<AppSettings | null> {
 
   try {
     const blob = await getBlob(BLOB_SETTINGS_PATH, {
-      access: "private",
+      access: BLOB_ACCESS,
       token: BLOB_RW_TOKEN
     });
     if (!blob || !("stream" in blob)) return DEFAULT_SETTINGS;
@@ -135,7 +136,7 @@ async function writeSettingsToBlob(next: AppSettings): Promise<boolean> {
 
   try {
     await putBlob(BLOB_SETTINGS_PATH, JSON.stringify(next, null, 2), {
-      access: "private",
+      access: BLOB_ACCESS,
       addRandomSuffix: false,
       allowOverwrite: true,
       contentType: "application/json",
