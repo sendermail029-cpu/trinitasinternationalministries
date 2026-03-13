@@ -94,7 +94,7 @@ export async function readSettings(): Promise<AppSettings> {
     if (fromKv) {
       return {
         channelId: fromKv.channelId || process.env.YOUTUBE_CHANNEL_ID || "",
-        customLiveUrl: fromKv.customLiveUrl || envCustomLiveUrl
+        customLiveUrl: envCustomLiveUrl || fromKv.customLiveUrl
       };
     }
   }
@@ -104,7 +104,7 @@ export async function readSettings(): Promise<AppSettings> {
     const normalized = normalizeSettings(JSON.parse(raw));
     return {
       channelId: normalized.channelId || process.env.YOUTUBE_CHANNEL_ID || "",
-      customLiveUrl: normalized.customLiveUrl || envCustomLiveUrl
+      customLiveUrl: envCustomLiveUrl || normalized.customLiveUrl
     };
   } catch {
     return {
