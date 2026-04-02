@@ -16,6 +16,9 @@ const poppins = Poppins({
   weight: ["300", "400", "500", "600", "700"]
 });
 
+// 🔴 Toggle this
+const DISABLE_SITE = true;
+
 export const metadata: Metadata = {
   title: "Trinitas Ministries | International Christian Ministry",
   description:
@@ -49,8 +52,26 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${playfair.variable} ${poppins.variable} font-sans bg-white text-navy`}>
-        {children}
-        <WhatsAppButton />
+
+        {DISABLE_SITE ? (
+          <div style={{
+            height: "100vh",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            background: "white",
+            fontSize: "18px",
+            fontWeight: "500"
+          }}>
+            <p>Please renew the hosting to restore the website.</p>
+          </div>
+        ) : (
+          <>
+            {children}
+            <WhatsAppButton />
+          </>
+        )}
+
       </body>
     </html>
   );
