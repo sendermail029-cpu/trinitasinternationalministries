@@ -17,7 +17,7 @@ const poppins = Poppins({
 });
 
 // 🔴 Toggle this
-const DISABLE_SITE = true;
+const DISABLE_SITE = false;
 
 export const metadata: Metadata = {
   title: "Trinitas Ministries | International Christian Ministry",
