@@ -3,15 +3,15 @@ import Image from "next/image";
 const popularMessages = [
   {
     title: "🛑 SUNDAY SERVICE || PASTOR KALEBU GARU || 08-02-26 || TRINITAS MINISTRIES",
-    embedUrl: "https://www.youtube.com/embed/5LdfZLeFADM"
+    embedUrl: "https://www.youtube.com/embed/JbpJOfemxUw"
   },
   {
     title: "SUNDAY SERVICE || PASTOR KALEBU GARU || TRINITAS MINISTRIES VIJAYAWADA 21-09-2025",
-    embedUrl: "https://www.youtube.com/embed/N2fngkjQZjk"
+    embedUrl: "https://www.youtube.com/embed/UzLvj-H-IxU"
   },
   {
     title: "🛑 SUNDAY SERVICE || PASTOR KALEBU GARU || TRINITAS MINISTRIES VIJAYAWADA 26-10-2025",
-    embedUrl: "https://www.youtube.com/embed/2_xl3C57sYk"
+    embedUrl: "https://www.youtube.com/embed/NN38g9fhVVU"
   }
 ];
 
