@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import { X, Maximize2, Camera } from "lucide-react";
 
 type GalleryImage = {
@@ -91,22 +90,15 @@ export default function Gallery() {
               onClick={() => setSelectedImg(image)}
             >
 
-              <Image
+              <img
                 src={image.src}
                 alt={image.title}
-                width={600}
-                height={800}
                 className="h-[440px] w-full bg-slate-100 object-contain transition-transform duration-700 lg:h-auto lg:object-cover lg:group-hover:scale-110"
+                loading="lazy"
               />
 
-              <div className="absolute inset-0 bg-navy/60 opacity-0 group-hover:opacity-100 transition flex flex-col justify-end p-6">
-                <Maximize2 className="text-gold mb-2" size={18}/>
-                <h3 className="text-white font-bold text-xs uppercase tracking-widest">
-                  {image.title}
-                </h3>
-                <p className="text-white/60 text-[10px] uppercase">
-                  {image.subtitle}
-                </p>
+              <div className="absolute inset-0 bg-navy/35 opacity-0 group-hover:opacity-100 transition flex items-end p-6">
+                <Maximize2 className="text-gold" size={20}/>
               </div>
 
             </div>
@@ -166,11 +158,10 @@ export default function Gallery() {
             </button>
 
             <div className="relative w-[90%] max-w-5xl h-[70vh]">
-              <Image
+              <img
                 src={selectedImg.src}
                 alt={selectedImg.title}
-                fill
-                className="object-contain"
+                className="h-full w-full object-contain"
               />
             </div>
 

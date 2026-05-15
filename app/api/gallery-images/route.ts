@@ -36,7 +36,7 @@ export async function GET() {
         .map((blob) => ({
           src: blob.url,
           title: titleFromFileName(path.basename(blob.pathname)),
-          subtitle: "Uploaded from Admin Panel"
+          subtitle: ""
         }));
 
       return NextResponse.json({ images });
@@ -61,7 +61,7 @@ export async function GET() {
     const images: GalleryItem[] = withMeta.map(({ name }) => ({
       src: `/uploads/${name}`,
       title: titleFromFileName(name),
-      subtitle: "Uploaded from Admin Panel"
+      subtitle: ""
     }));
 
     return NextResponse.json({ images });
