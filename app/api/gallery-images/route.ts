@@ -1,9 +1,11 @@
 import { promises as fs } from "fs";
 import path from "path";
+import { list } from "@vercel/blob";
 import { NextResponse } from "next/server";
 
 const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
 const IMAGE_EXTENSIONS = new Set([".webp", ".jpg", ".jpeg", ".png"]);
+const BLOB_RW_TOKEN = process.env.BLOB_READ_WRITE_TOKEN;
 
 type GalleryItem = {
   src: string;
@@ -22,6 +24,24 @@ function titleFromFileName(fileName: string): string {
 
 export async function GET() {
   try {
+    if (BLOB_RW_TOKEN) {
+      const blobs = await list({
+        prefix: "gallery/",
+        token: BLOB_RW_TOKEN
+      });
+
+      const images: GalleryItem[] = blobs.blobs
+        .filter((blob) => IMAGE_EXTENSIONS.has(path.extname(blob.pathname).toLowerCase()))
+        .sort((a, b) => b.uploadedAt.getTime() - a.uploadedAt.getTime())
+        .map((blob) => ({
+          src: blob.url,
+          title: titleFromFileName(path.basename(blob.pathname)),
+          subtitle: "Uploaded from Admin Panel"
+        }));
+
+      return NextResponse.json({ images });
+    }
+
     const entries = await fs.readdir(UPLOAD_DIR, { withFileTypes: true });
     const files = entries
       .filter((entry) => entry.isFile())

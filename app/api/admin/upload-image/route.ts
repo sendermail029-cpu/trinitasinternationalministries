@@ -1,9 +1,11 @@
 import { promises as fs } from "fs";
 import path from "path";
 import { NextRequest, NextResponse } from "next/server";
+import { put } from "@vercel/blob";
 import { isValidAdminToken } from "@/lib/adminAuth";
 
 const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
+const BLOB_RW_TOKEN = process.env.BLOB_READ_WRITE_TOKEN;
 
 function sanitizeName(input: string): string {
   return input
@@ -36,9 +38,19 @@ export async function POST(request: NextRequest) {
 
     const safeName = sanitizeName(imageName) || "upload";
     const fileName = `${safeName}-${Date.now()}.webp`;
-    const fullPath = path.join(UPLOAD_DIR, fileName);
-    const bytes = new Uint8Array(await image.arrayBuffer());
+    const bytes = Buffer.from(await image.arrayBuffer());
 
+    if (BLOB_RW_TOKEN) {
+      const blob = await put(`gallery/${fileName}`, bytes, {
+        access: "public",
+        contentType: "image/webp",
+        token: BLOB_RW_TOKEN
+      });
+
+      return NextResponse.json({ success: true, path: blob.url });
+    }
+
+    const fullPath = path.join(UPLOAD_DIR, fileName);
     await fs.mkdir(UPLOAD_DIR, { recursive: true });
     await fs.writeFile(fullPath, bytes);
 

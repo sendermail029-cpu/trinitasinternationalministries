@@ -5,6 +5,14 @@ import { get as getBlob, put as putBlob } from "@vercel/blob";
 export type AppSettings = {
   channelId: string;
   customLiveUrl: string;
+  liveTitle: string;
+  liveHistory: LiveHistoryItem[];
+};
+
+export type LiveHistoryItem = {
+  title: string;
+  embedUrl: string;
+  updatedAt: string;
 };
 
 const SETTINGS_DIR = path.join(process.cwd(), "data");
@@ -22,7 +30,9 @@ const ENV_CUSTOM_LIVE_URL =
 
 const DEFAULT_SETTINGS: AppSettings = {
   channelId: "",
-  customLiveUrl: ""
+  customLiveUrl: "",
+  liveTitle: "",
+  liveHistory: []
 };
 
 function normalizeSettings(input: unknown): AppSettings {
@@ -32,9 +42,27 @@ function normalizeSettings(input: unknown): AppSettings {
 
   const candidate = input as Partial<AppSettings>;
 
+  const liveHistory = Array.isArray(candidate.liveHistory)
+    ? candidate.liveHistory
+        .map((item) => {
+          if (!item || typeof item !== "object") return null;
+          const historyItem = item as Partial<LiveHistoryItem>;
+          const embedUrl = (historyItem.embedUrl ?? "").trim();
+          if (!embedUrl) return null;
+          return {
+            title: (historyItem.title ?? "").trim() || "Sunday Service",
+            embedUrl,
+            updatedAt: (historyItem.updatedAt ?? "").trim()
+          };
+        })
+        .filter((item): item is LiveHistoryItem => Boolean(item))
+    : [];
+
   return {
     channelId: (candidate.channelId ?? "").trim(),
-    customLiveUrl: (candidate.customLiveUrl ?? "").trim()
+    customLiveUrl: (candidate.customLiveUrl ?? "").trim(),
+    liveTitle: (candidate.liveTitle ?? "").trim(),
+    liveHistory
   };
 }
 
@@ -67,7 +95,9 @@ function mergeSettings(
       ? stored.customLiveUrl
       : preferEnvCustomLiveUrl
         ? envCustomLiveUrl || stored.customLiveUrl
-        : stored.customLiveUrl || envCustomLiveUrl
+        : stored.customLiveUrl || envCustomLiveUrl,
+    liveTitle: stored.liveTitle,
+    liveHistory: stored.liveHistory
   };
 }
 

@@ -10,6 +10,7 @@ export default function AdminPage() {
   const [token, setToken] = useState<string | null>(null);
   const [channelId, setChannelId] = useState("");
   const [customLiveUrl, setCustomLiveUrl] = useState("");
+  const [liveTitle, setLiveTitle] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [warning, setWarning] = useState("");
@@ -38,6 +39,7 @@ export default function AdminPage() {
         const data = (await response.json()) as {
           channelId?: string;
           customLiveUrl?: string;
+          liveTitle?: string;
           error?: string;
         };
 
@@ -47,6 +49,7 @@ export default function AdminPage() {
 
         setChannelId(data.channelId ?? "");
         setCustomLiveUrl(data.customLiveUrl ?? "");
+        setLiveTitle(data.liveTitle ?? "");
       } catch (err) {
         const message = err instanceof Error ? err.message : "Unable to load settings.";
         setError(message);
@@ -108,7 +111,8 @@ export default function AdminPage() {
         },
         body: JSON.stringify({
           channelId,
-          customLiveUrl
+          customLiveUrl,
+          liveTitle
         })
       });
       const data = (await response.json()) as { success?: boolean; error?: string; persistent?: boolean };
@@ -235,6 +239,15 @@ export default function AdminPage() {
               onChange={(event) => setCustomLiveUrl(event.target.value)}
               className="w-full rounded-lg border border-gold/40 bg-white/10 px-4 py-3 text-white placeholder:text-white/60 focus:outline-none"
               placeholder="https://youtu.be/... or https://youtube.com/watch?v=..."
+            />
+
+            <label className="block text-sm text-gold">Live Message Title</label>
+            <input
+              type="text"
+              value={liveTitle}
+              onChange={(event) => setLiveTitle(event.target.value)}
+              className="w-full rounded-lg border border-gold/40 bg-white/10 px-4 py-3 text-white placeholder:text-white/60 focus:outline-none"
+              placeholder="SUNDAY SERVICE || PASTOR KALEBU GARU || 08-02-2026"
             />
 
             <button

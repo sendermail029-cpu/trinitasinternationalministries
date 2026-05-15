@@ -1,17 +1,20 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Image from "next/image";
 
 const popularMessages = [
   {
     title: "🛑 SUNDAY SERVICE || PASTOR KALEBU GARU || 08-02-26 || TRINITAS MINISTRIES",
-    embedUrl: "https://www.youtube.com/embed/JbpJOfemxUw"
+    embedUrl: "https://www.youtube.com/embed/5LdfZLeFADM"
   },
   {
     title: "SUNDAY SERVICE || PASTOR KALEBU GARU || TRINITAS MINISTRIES VIJAYAWADA 21-09-2025",
-    embedUrl: "https://www.youtube.com/embed/UzLvj-H-IxU"
+    embedUrl: "https://www.youtube.com/embed/N2fngkjQZjk"
   },
   {
     title: "🛑 SUNDAY SERVICE || PASTOR KALEBU GARU || TRINITAS MINISTRIES VIJAYAWADA 26-10-2025",
-    embedUrl: "https://www.youtube.com/embed/NN38g9fhVVU"
+    embedUrl: "https://www.youtube.com/embed/2_xl3C57sYk"
   }
 ];
 
@@ -35,7 +38,33 @@ type VideoCardProps = {
   embedUrl: string;
 };
 
+type LiveStatusResponse = {
+  previousMessages?: Array<{
+    title: string;
+    embedUrl: string;
+  }>;
+};
+
+function cleanMessageTitle(title: string): string {
+  const cleaned = title
+    .replace(/^[^A-Za-z0-9]+/, "")
+    .replace(/\s*\|\|\s*\d{1,2}[-/]\d{1,2}[-/]\d{2,4}/g, "")
+    .replace(/\s+\d{1,2}[-/]\d{1,2}[-/]\d{2,4}/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (/sunday service/i.test(cleaned) && /pastor kalebu/i.test(cleaned)) {
+    return cleaned.includes("VIJAYAWADA")
+      ? "SUNDAY SERVICE || PASTOR KALEBU GARU || TRINITAS MINISTRIES VIJAYAWADA"
+      : "SUNDAY SERVICE || PASTOR KALEBU GARU || TRINITAS MINISTRIES";
+  }
+
+  return cleaned;
+}
+
 function VideoCard({ title, embedUrl }: VideoCardProps) {
+  const displayTitle = cleanMessageTitle(title);
+
   return (
     <article className="overflow-hidden rounded-2xl border border-gold/25 bg-white shadow-premium">
       <div className="relative aspect-video">
@@ -50,13 +79,39 @@ function VideoCard({ title, embedUrl }: VideoCardProps) {
         />
       </div>
       <div className="px-4 py-3">
-        <h4 className="text-sm font-bold uppercase tracking-wide text-navy">{title}</h4>
+        <h4 className="text-sm font-bold uppercase tracking-wide text-navy">{displayTitle}</h4>
       </div>
     </article>
   );
 }
 
 export default function YouTubeHighlights() {
+  const [messages, setMessages] = useState(popularMessages);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadPreviousMessages = async () => {
+      try {
+        const response = await fetch("/api/youtube-live", { cache: "no-store" });
+        const data = (await response.json()) as LiveStatusResponse;
+        const previousMessages = data.previousMessages ?? [];
+
+        if (mounted && previousMessages.length > 0) {
+          setMessages(previousMessages);
+        }
+      } catch {
+        if (mounted) setMessages(popularMessages);
+      }
+    };
+
+    loadPreviousMessages();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   return (
     <section id="media" className="bg-slate-50 py-24">
       <div className="section-shell mx-auto max-w-7xl space-y-16">
@@ -66,7 +121,7 @@ export default function YouTubeHighlights() {
             <h2 className="mt-3 text-3xl font-semibold text-navy md:text-4xl">Popular Messages</h2>
           </div>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {popularMessages.map((video) => (
+            {messages.map((video) => (
               <VideoCard key={`msg-${video.title}`} title={video.title} embedUrl={video.embedUrl} />
             ))}
           </div>

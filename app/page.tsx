@@ -7,6 +7,7 @@ import ServiceTimings from "@/components/ServiceTimings";
 import LiveService from "@/components/LiveService";
 import Donations from "@/components/Donations";
 import YouTubeHighlights from "@/components/YouTubeHighlights";
+import Gallery from "@/components/Gallery";
 import PrayerRequest from "@/components/PrayerRequest";
 import Team from "@/components/Team";
 import Contact from "@/components/Contact";
@@ -20,11 +21,12 @@ export default function Home() {
       <About />
       <Pastor />
       <MinistryTabs />
-       <Team />
+      <Team />
       <ServiceTimings />
       <LiveService />
-      <Donations />
       <YouTubeHighlights />
+      <Donations />
+      <Gallery />
       <PrayerRequest />
      
       <Contact />

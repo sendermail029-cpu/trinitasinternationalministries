@@ -9,6 +9,12 @@ type YoutubeSearchResponse = {
   }>;
 };
 
+function previousMessages(settings: Awaited<ReturnType<typeof readSettings>>) {
+  return settings.liveHistory
+    .filter((item) => item.embedUrl !== settings.customLiveUrl)
+    .slice(0, 3);
+}
+
 export async function GET() {
   try {
     const settings = await readSettings();
@@ -16,7 +22,9 @@ export async function GET() {
     if (settings.customLiveUrl) {
       return NextResponse.json({
         status: "live",
-        embedUrl: settings.customLiveUrl
+        embedUrl: settings.customLiveUrl,
+        title: settings.liveTitle,
+        previousMessages: previousMessages(settings)
       });
     }
 
@@ -26,7 +34,9 @@ export async function GET() {
     if (!apiKey || !channelId) {
       return NextResponse.json({
         status: "offline",
-        embedUrl: null
+        embedUrl: null,
+        title: "",
+        previousMessages: previousMessages(settings)
       });
     }
 
@@ -46,7 +56,9 @@ export async function GET() {
     if (!response.ok) {
       return NextResponse.json({
         status: "offline",
-        embedUrl: null
+        embedUrl: null,
+        title: "",
+        previousMessages: previousMessages(settings)
       });
     }
 
@@ -56,22 +68,27 @@ export async function GET() {
     if (!videoId) {
       return NextResponse.json({
         status: "offline",
-        embedUrl: null
+        embedUrl: null,
+        title: "",
+        previousMessages: previousMessages(settings)
       });
     }
 
     return NextResponse.json({
       status: "live",
-      embedUrl: `https://www.youtube.com/embed/${videoId}`
+      embedUrl: `https://www.youtube.com/embed/${videoId}`,
+      title: "",
+      previousMessages: previousMessages(settings)
     });
   } catch {
     return NextResponse.json(
       {
         status: "offline",
-        embedUrl: null
+        embedUrl: null,
+        title: "",
+        previousMessages: []
       },
       { status: 500 }
     );
   }
 }
-
