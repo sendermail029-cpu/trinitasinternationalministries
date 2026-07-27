@@ -5,9 +5,9 @@ import { Clock, Radio, Calendar, Video } from "lucide-react";
 
 const serviceSchedule = [
   { title: "Sunday School", time: "09:00 AM", day: "Sunday", dayIdx: 0, hour: 9 },
-  { title: "Sunday Worship", time: "09:00 AM", day: "Sunday", dayIdx: 0, hour: 9 },
-  { title: "Children's Worship", time: "Morning", day: "1st Sunday", dayIdx: 0, hour: 10 },
-  { title: "Believers Fellowship", time: "06:30 PM", day: "Tuesday", dayIdx: 2, hour: 18.5 },
+  { title: "Sunday Worship", time: "10:00 AM", day: "Sunday", dayIdx: 0, hour: 9 },
+
+  { title: "Prayer Warriors India(PWI)", time: "06:30 PM", day: "3rd Tuesday of every month", dayIdx: 2, hour: 18.5 },
   { title: "Fasting Prayer", time: "11:00 AM", day: "Friday", dayIdx: 5, hour: 11 },
   { title: "Holy Spirit Prayer", time: "07:00 PM", day: "Saturday", dayIdx: 6, hour: 19 },
 ];
